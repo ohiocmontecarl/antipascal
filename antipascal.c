@@ -4,9 +4,9 @@
 #include <stdbool.h>
 #include <locale.h>
 
-int getRandom(int x);
-int minArr(int x, int y[], int z);
-void delElement(int x, int y[], int z);
+int factorial(int x);
+//int checkPascal(int x[][][]);
+void makePascal(int n, int x, int z[][n][factorial(n)]);
 
 int main() {
   
@@ -20,7 +20,7 @@ int main() {
   int max_value=(n*(n+1))/2;
   
   int antp[n][n];
-  //int false_antp[n][n][max_value];
+  int allArrs[n][n][factorial(n)];
   
   int i;
   int values[max_value];
@@ -29,56 +29,75 @@ int main() {
 	  values[i] = i+1;
   }
   
-  int value_size= sizeof(values)/sizeof(values[0]);
-  
-  int a;
-  int b;
-  for (a=n; a>0; a--) {
-	  for (b=a; b>0; b--){
-		  antp[a][b]= getRandom(max_value);
-		  while (minArr(antp[a][b], values, value_size) == 1) {
-			  antp[a][b]= getRandom(max_value);
-		  }
-		  delElement(antp[a][b], values, value_size);
-	  }
-  }
+  makePascal(n, factorial(n), allArrs);
   
   int j;
   int k;
-  for (j=0; j<n; j++) {
-	  for (k=0; k<=j; k++) {
-		  printf("%d", antp[j][k]);
+  int l;
+  int facn = factorial(n);
+  
+  for (l=0; l<facn; l++) {
+	  printf("%d. Antipascal Üçgeni \n", l+1);
+	  for (j=0; j<n; j++) {
+		  for (k=0; k<j+1; k++) {
+			  printf("%d ", (int)allArrs[j][k][l]);
+		  }
+		  printf("\n");
 	  }
-	  printf("\n");
   }
   
   system("pause");
   return 0;
 } 
 
-int getRandom(int x) {
-	int y = rand();
-	if (y>x || y==0) {
-		return x;
+int factorial(int x) {
+	int i;
+	int j=1;
+	for (i=x; i>0; i--) {
+		j *= i;
 	}
-	return y;
+	return j;
 }
 
-int minArr(int x, int y[], int z) {
-	int i;
-	for (i=z-1; i>=0; i--) {
-		if (y[i]==x) {
-			return 1;
+void makePascal(int n, int x, int z[][n][factorial(n)]) { // x tekrarlama, z butun antipascal ucgenleri, n sabit.
+	int i, j, k;
+	double random;
+	int gauss=n*(n+1)/2;
+	int put;
+	for (i=0; i<x; i++) {
+		for (j=0; j<n; j++) {
+			for (k=0; k<j+1; k++) {
+			    random = (double)((rand()%(gauss+1))+1);
+				put = (int)random;
+				z[j][k][i]= put;
+				int m, f;
+				for (m=0; m<n; m++) {
+					for (f=0; f<m+1; f++) {
+						while ((z[j][k][i] == (int)z[m][f][i] && !(m==j && f==k)) || z[j][k][i] > gauss) {
+						    random = (double)((rand()%(gauss+1))+1);
+							put = (int)random;
+							z[j][k][i]= put;
+						}
+					}
+				}
+			}
 		}
-	}
-	return 0;
-}
-
-void delElement(int x, int y[], int z) {
-	int i;
-	for (i=z-1; i>=0; i--) {
-		if (y[i]==x) {
-			y[i]=0;
+		if (i>0) {
+			int counter, p, r;
+			int s = 0;
+			for (p=0; p<n; p++) {
+				for (r=0; r<p+1; r++) {
+					while (s<i) {
+						if (z[p][r][i]==z[p][r][i-s+1]) {
+							counter++;
+						}
+						s++;
+					}
+				}
+			}
+			if (counter/s == n*(n+1)/2) {
+				i=0;
+			}
 		}
 	}
 }
